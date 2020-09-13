@@ -7,12 +7,33 @@
 //
 
 import UIKit
+import PencilKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserver {
 
+    @IBOutlet weak var canvasView: PKCanvasView!
+    
+    let canvasWidth: CGFloat = 768
+    let canvasOverscrollHeight: CGFloat = 500
+    
+    var drawing = PKDrawing()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        canvasView.delegate = self
+        canvasView.drawing = drawing
+        
+        canvasView.alwaysBounceVertical = true
+        canvasView.allowsFingerDrawing = true
+        
+        if let window = parent?.view.window, let toolPicker = PKToolPicker.shared(for: window) {
+            toolPicker.setVisible(true, forFirstResponder: canvasView)
+            toolPicker.addObserver(canvasView)
+            
+            canvasView.becomeFirstResponder()
+        }
     }
 
 
