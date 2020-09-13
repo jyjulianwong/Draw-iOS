@@ -24,7 +24,13 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
-                    <navigationItem key="navigationItem" id="6Pj-TF-MZM"/>
+                    <navigationItem key="navigationItem" id="6Pj-TF-MZM">
+                        <barButtonItem key="rightBarButtonItem" title="Activate Eraser" id="qFG-Ye-Pp2">
+                            <connections>
+                                <action selector="activateEraser:" destination="BYZ-38-t0r" id="5k9-ll-ebW"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="canvasView" destination="xSz-xk-AVM" id="gvs-fg-Pbc"/>
                     </connections>

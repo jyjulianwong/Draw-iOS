@@ -35,7 +35,14 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
             canvasView.becomeFirstResponder()
         }
     }
+    
+    override var prefersHomeIndicatorAutoHidden: Bool {
+        return true
+    }
 
-
+    @IBAction func activateEraser(_ sender: Any) {
+        canvasView.tool = PKEraserTool(.bitmap)
+    }
+    
 }
 
