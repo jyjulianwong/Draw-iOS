@@ -25,6 +25,18 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" id="6Pj-TF-MZM">
+                        <leftBarButtonItems>
+                            <barButtonItem title="Undo" id="AGw-xD-q6U">
+                                <connections>
+                                    <action selector="undoLastActionManually:" destination="BYZ-38-t0r" id="rRU-09-dDE"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Redo" id="CUn-GB-vXg">
+                                <connections>
+                                    <action selector="redoLastActionManually:" destination="BYZ-38-t0r" id="mui-5j-YLF"/>
+                                </connections>
+                            </barButtonItem>
+                        </leftBarButtonItems>
                         <barButtonItem key="rightBarButtonItem" title="Activate Eraser" id="qFG-Ye-Pp2">
                             <connections>
                                 <action selector="activateEraser:" destination="BYZ-38-t0r" id="5k9-ll-ebW"/>
@@ -33,6 +45,8 @@
                     </navigationItem>
                     <connections>
                         <outlet property="canvasView" destination="xSz-xk-AVM" id="gvs-fg-Pbc"/>
+                        <outlet property="manualRedoButton" destination="CUn-GB-vXg" id="keN-6U-CMT"/>
+                        <outlet property="manualUndoButton" destination="AGw-xD-q6U" id="SuN-mk-d8I"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

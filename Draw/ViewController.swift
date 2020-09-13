@@ -12,6 +12,8 @@ import PencilKit
 class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserver {
 
     @IBOutlet weak var canvasView: PKCanvasView!
+    @IBOutlet weak var manualUndoButton: UIBarButtonItem!
+    @IBOutlet weak var manualRedoButton: UIBarButtonItem!
     
     let canvasWidth: CGFloat = 768
     let canvasOverscrollHeight: CGFloat = 500
@@ -34,6 +36,8 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
             
             canvasView.becomeFirstResponder()
         }
+        
+        resetManualUndoRedoButtons()
     }
     
     override var prefersHomeIndicatorAutoHidden: Bool {
@@ -42,6 +46,21 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
 
     @IBAction func activateEraser(_ sender: Any) {
         canvasView.tool = PKEraserTool(.vector)
+    }
+    
+    @IBAction func undoLastActionManually(_ sender: Any) {
+        // self.undoManager?.undo()
+        resetManualUndoRedoButtons()
+    }
+    
+    @IBAction func redoLastActionManually(_ sender: Any) {
+        // self.undoManager?.redo()
+        resetManualUndoRedoButtons()
+    }
+    
+    func resetManualUndoRedoButtons() {
+        self.manualUndoButton.isEnabled = self.undoManager?.canUndo ?? false
+        self.manualRedoButton.isEnabled = self.undoManager?.canRedo ?? false
     }
     
 }
