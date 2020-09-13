@@ -41,7 +41,7 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
     }
 
     @IBAction func activateEraser(_ sender: Any) {
-        canvasView.tool = PKEraserTool(.bitmap)
+        canvasView.tool = PKEraserTool(.vector)
     }
     
 }
