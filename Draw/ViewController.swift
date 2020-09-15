@@ -15,17 +15,21 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
     @IBOutlet weak var manualUndoButton: UIBarButtonItem!
     @IBOutlet weak var manualRedoButton: UIBarButtonItem!
     
-    let canvasWidth: CGFloat = 768
-    let canvasOverscrollHeight: CGFloat = 500
+    // let canvasWidth: CGFloat = 768
+    // let canvasOverscrollHeight: CGFloat = 500
     
-    var drawing = PKDrawing()
+    var manualUndoManager = UndoManager()
+    var canvasHistory = [PKDrawing]()
+    var canvasHistoryIndex = 0
+    var isCanvasResetting = false;
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
         canvasView.delegate = self
-        canvasView.drawing = drawing
+        canvasHistory.append(PKDrawing())
+        canvasView.drawing = canvasHistory.first!
         
         canvasView.alwaysBounceVertical = true
         canvasView.allowsFingerDrawing = true
@@ -48,19 +52,82 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         canvasView.tool = PKEraserTool(.vector)
     }
     
+    // MARK: - Undo and redo buttons
+    
     @IBAction func undoLastActionManually(_ sender: Any) {
-        // self.undoManager?.undo()
+        // Overrides the undo button on PKToolPicker
+        manualUndoManager.undo()
         resetManualUndoRedoButtons()
     }
     
     @IBAction func redoLastActionManually(_ sender: Any) {
-        // self.undoManager?.redo()
+        // Overrides the redo button on PKToolPicker
+        manualUndoManager.redo()
         resetManualUndoRedoButtons()
     }
     
     func resetManualUndoRedoButtons() {
-        self.manualUndoButton.isEnabled = self.undoManager?.canUndo ?? false
-        self.manualRedoButton.isEnabled = self.undoManager?.canRedo ?? false
+        // Enables the buttons if there is a undo / redo action available
+        self.manualUndoButton.isEnabled = manualUndoManager.canUndo
+        self.manualRedoButton.isEnabled = manualUndoManager.canRedo
+    }
+    
+    // MARK: - Register actions
+    
+    func addToCanvasHistory(_ drawing: PKDrawing) {
+        // Overwrites actions that were not redone by resetting canvasHistoryIndex
+        canvasHistoryIndex += 1
+        if (canvasHistoryIndex < canvasHistory.count) {
+            // TODO: canvasView is unable to be completely replaced when redoing
+            // TODO: Changes made by erasers are not yet supported
+            canvasHistory[canvasHistoryIndex] = drawing
+        } else {
+            canvasHistory.append(drawing)
+        }
+    }
+    
+    func resetToLastDrawing() {
+        // Resets canvasView to the last drawing or action in history
+        canvasHistoryIndex -= 1
+        isCanvasResetting = true
+        canvasView.drawing = canvasHistory[canvasHistoryIndex]
+    }
+    
+    func resetToNextDrawing() {
+        // Resets canvasView to the next drawing or action in history
+        canvasHistoryIndex += 1
+        isCanvasResetting = true
+        canvasView.drawing = canvasHistory[canvasHistoryIndex]
+    }
+    
+    func registerResetToLastDrawingAction() {
+        manualUndoManager.registerUndo(withTarget: self, handler: {
+            $0.resetToNextDrawing()
+            $0.registerResetToNextDrawingAction()
+        })
+    }
+    
+    func registerResetToNextDrawingAction() {
+        manualUndoManager.registerUndo(withTarget: self, handler: {
+            $0.resetToLastDrawing()
+            $0.registerResetToLastDrawingAction()
+        })
+    }
+    
+    // MARK: - Detect canvas changes
+    
+    func canvasViewDidBeginUsingTool(_ canvasView: PKCanvasView) {
+        // canvasView should no longer be resetting when user begins drawing
+        isCanvasResetting = false
+    }
+    
+    func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
+        // Avoids repeatedly registering an action as the canvas is automatically resetting
+        guard !isCanvasResetting else { return }
+        
+        addToCanvasHistory(canvasView.drawing)
+        registerResetToNextDrawingAction()
+        resetManualUndoRedoButtons()
     }
     
 }
